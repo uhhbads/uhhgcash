@@ -10,3 +10,5 @@ env/
 
 .venv/
 .pytest_cache/
+mobile\.expo
+.mobile/.expo/
