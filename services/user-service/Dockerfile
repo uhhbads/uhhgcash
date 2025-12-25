@@ -1,8 +1,14 @@
-FROM eclipse-temurin:17-jdk-alpine
+
+# ---- Build Stage ----
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY pom.xml ./
-RUN mkdir -p src
-COPY . .
-RUN ./mvnw -v || true
+COPY pom.xml .
+COPY src ./src
+RUN mvn -DskipTests package
+
+# ---- Runtime Stage ----
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/target/*.jar ./app.jar
 EXPOSE 8080
-CMD ["./mvnw","spring-boot:run"]
+CMD ["java","-jar","app.jar"]
