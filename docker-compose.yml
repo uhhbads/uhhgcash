@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6
+    container_name: ag_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - wallet-service
+      - payment-service
+      - credit-service
+
+  user-service:
+    build: ./services/user-service
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/users
+    depends_on:
+      - mongo
+
+  wallet-service:
+    build: ./services/wallet-service
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/wallets
+      - REDIS_HOST=redis
+    depends_on:
+      - mongo
+      - redis
+
+  payment-service:
+    build: ./services/payment-service
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/payments
+    depends_on:
+      - mongo
+
+  credit-service:
+    build: ./credit-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
