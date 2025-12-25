@@ -16,6 +16,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js (LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
       - name: Build Java services (placeholder)
         run: echo "Add mvn build steps for services"
       - name: Build credit-service
@@ -23,5 +31,13 @@ jobs:
           cd credit-service
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Build gateway
+        run: |
+          cd gateway
+          npm ci || npm install
+      - name: Build mobile
+        run: |
+          cd mobile
+          npm ci || npm install
       - name: Lint / tests
         run: echo "Add tests and linters"
