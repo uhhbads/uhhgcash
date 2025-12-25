@@ -1,28 +1,21 @@
-import React, {useState} from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
 
-export default function App(){
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState(null);
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignupScreen';
+import HomeScreen from './screens/HomeScreen';
 
-  const login = async () => {
-    try{
-      const res = await fetch('http://localhost:8080/api/users/login', {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email,password})
-      });
-      const j = await res.json();
-      setToken(j.token || JSON.stringify(j));
-    }catch(e){console.warn(e)}
-  }
+const Stack = createNativeStackNavigator();
 
+export default function App() {
   return (
-    <View style={{padding:30}}>
-      <Text>Mini GCash Mobile (Starter)</Text>
-      <TextInput placeholder="email" value={email} onChangeText={setEmail} style={{borderWidth:1,marginVertical:8,padding:8}} />
-      <TextInput placeholder="password" value={password} onChangeText={setPassword} secureTextEntry style={{borderWidth:1,marginVertical:8,padding:8}} />
-      <Button title="Login" onPress={login} />
-      <Text style={{marginTop:20}}>Token: {token}</Text>
-    </View>
-  )
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
