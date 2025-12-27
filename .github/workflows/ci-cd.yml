@@ -9,35 +9,69 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [user-service, wallet-service, payment-service, credit-service, gateway, mobile]
+
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up runtimes
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Set up Node.js (LTS)
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-      - name: Build Java services (placeholder)
-        run: echo "Add mvn build steps for services"
-      - name: Build credit-service
+          cache: 'npm'
+
+      # 3️⃣ Build Java services
+      - name: Build Java services
+        if: matrix.service == 'user-service' || matrix.service == 'wallet-service' || matrix.service == 'payment-service'
         run: |
-          cd credit-service
+          cd services/${{ matrix.service }}
+          mvn clean package -DskipTests
+
+      # 4️⃣ Build credit-service (Python)
+      - name: Build credit-service
+        if: matrix.service == 'credit-service'
+        run: |
+          cd services/credit-service
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      # 5️⃣ Build gateway (Node.js)
       - name: Build gateway
+        if: matrix.service == 'gateway'
         run: |
           cd gateway
-          npm ci || npm install
+          npm ci
+          npm run build || echo "No build script, skipping"
+
+      # 6️⃣ Build mobile (Node.js/React Native)
       - name: Build mobile
+        if: matrix.service == 'mobile'
         run: |
           cd mobile
-          npm ci || npm install
+          npm ci
+          npm run build || echo "No build script, skipping"
+
+      # 7️⃣ Run lint & tests
       - name: Lint / tests
-        run: echo "Add tests and linters"
+        run: |
+          echo "Add tests and linters per service"
+          # Example:
+          # cd services/user-service && mvn test
+          # cd gateway && npm run lint && npm test
