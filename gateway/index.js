@@ -20,6 +20,11 @@ app.use('/api/wallet', createProxyMiddleware({ target: 'http://wallet-service:80
 app.use('/api/payment', createProxyMiddleware({ target: 'http://payment-service:8080', changeOrigin: true, pathRewrite: {'^/api/payment': ''} }));
 app.use('/api/credit', createProxyMiddleware({ target: 'http://credit-service:8000', changeOrigin: true, pathRewrite: {'^/api/credit': ''} }));
 
+app.use('/', createProxyMiddleware({
+  target: 'http://frontend:3000',
+  changeOrigin: true
+}));
+
 app.get('/', (req, res) => res.send('Mini GCash API Gateway'));
 
 const PORT = process.env.PORT || 8080;

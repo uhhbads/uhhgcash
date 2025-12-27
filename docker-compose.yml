@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongo:
     image: mongo:6
@@ -18,10 +16,12 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - user-service
-      - wallet-service
-      - payment-service
-      - credit-service
+      - frontend
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
 
   user-service:
     build: ./services/user-service

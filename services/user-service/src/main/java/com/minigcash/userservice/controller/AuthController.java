@@ -17,11 +17,6 @@ public class AuthController {
         return Map.of("status","UP");
     }
 
-    @GetMapping("/signup")
-    public Map<String,String> signupInfo(){
-        return Map.of("info","use POST /signup with JSON body");
-    }
-
     @PostMapping("/signup")
     public Map<String,String> signup(@RequestBody Map<String,String> body){
         return Map.of("status","ok","message","signup stub - implement persistence");
